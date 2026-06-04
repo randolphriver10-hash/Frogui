@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FROGUI — Creá · Pintá · Disfrutá</title>
+  <meta name="description" content="Figuras de cartón inspiradas en Minecraft para pintar, personalizar y disfrutar en familia.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ══════════════════════════════════
+       TOKENS
+    ══════════════════════════════════ */
+    :root{
+      --sky-top:#5A9AB5;--sky-mid:#7BBDD6;--sky-bot:#B8E4F8;
+      --grass:#5D9C24;--grass-light:#7BC241;--grass-bright:#8ED64A;
+      --dirt:#8B5E3C;--dirt-dark:#6B4226;--dirt-mid:#7D5233;
+      --green-deep:#2E6B14;--green-mc:#44A537;
+      --beige:#F5E6C8;--beige-mid:#E8D5A3;--beige-dark:#D4C090;
+      --yellow:#FDE68A;--yellow-acc:#F59E0B;--yellow-dark:#D97706;
+      --brown-acc:#78350F;
+      --text:#1A0A00;--text-mid:#44403C;--text-light:#78716C;
+    }
+
+    /* ══════════════════════════════════
+       RESET
+    ══════════════════════════════════ */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Poppins',sans-serif;background:var(--beige);color:var(--text);overflow-x:hidden}
+    img{display:block;max-width:100%}
+
+    /* ══════════════════════════════════
+       BUTTONS
+    ══════════════════════════════════ */
+    .btn{
+      display:inline-block;font-family:'Press Start 2P',monospace;font-size:8px;
+      padding:14px 18px;cursor:pointer;border:none;text-decoration:none;
+      line-height:1.6;text-align:center;transition:transform 80ms,box-shadow 80ms;
+      letter-spacing:.5px;min-height:44px;
+    }
+    .btn-green{background:var(--grass);color:#fff;box-shadow:inset -4px -4px 0 rgba(0,0,0,.35),inset 4px 4px 0 rgba(255,255,255,.15),0 5px 0 var(--green-deep)}
+    .btn-green:hover{transform:translateY(2px);box-shadow:inset -4px -4px 0 rgba(0,0,0,.35),inset 4px 4px 0 rgba(255,255,255,.15),0 3px 0 var(--green-deep)}
+    .btn-green:active{transform:translateY(5px);box-shadow:inset -4px -4px 0 rgba(0,0,0,.35),inset 4px 4px 0 rgba(255,255,255,.15),0 0 0 var(--green-deep)}
+    .btn-wa{background:#25D366;color:#fff;box-shadow:inset -4px -4px 0 rgba(0,0,0,.35),inset 4px 4px 0 rgba(255,255,255,.15),0 5px 0 #128C7E}
+    .btn-wa:hover{transform:translateY(2px);box-shadow:inset -4px -4px 0 rgba(0,0,0,.35),inset 4px 4px 0 rgba(255,255,255,.15),0 3px 0 #128C7E}
+    .btn-wa:active{transform:translateY(5px);box-shadow:inset -4px -4px 0 rgba(0,0,0,.35),inset 4px 4px 0 rgba(255,255,255,.15),0 0 0 #128C7E}
+    .btn-yellow{background:var(--yellow);color:var(--brown-acc);box-shadow:inset -4px -4px 0 rgba(0,0,0,.25),inset 4px 4px 0 rgba(255,255,255,.2),0 5px 0 var(--yellow-dark)}
+    .btn-yellow:hover{transform:translateY(2px);box-shadow:inset -4px -4px 0 rgba(0,0,0,.25),inset 4px 4px 0 rgba(255,255,255,.2),0 3px 0 var(--yellow-dark)}
+
+    /* ══════════════════════════════════
+       NAVBAR  — mobile base
+    ══════════════════════════════════ */
+    nav{
+      position:fixed;top:0;left:0;right:0;z-index:200;
+      background:var(--dirt);border-bottom:4px solid var(--dirt-dark);
+      box-shadow:0 4px 0 rgba(0,0,0,.3);
+      display:flex;align-items:center;justify-content:space-between;
+      padding:10px 16px;height:60px;
+    }
+    .nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none}
+    .nav-logo img{height:38px;width:38px;object-fit:contain;image-rendering:pixelated}
+    .nav-brand{font-family:'Press Start 2P',monospace;font-size:9px;color:var(--yellow);text-shadow:2px 2px 0 rgba(0,0,0,.5);letter-spacing:2px}
+    .nav-links{display:none;gap:16px;list-style:none} /* hidden mobile */
+    .nav-links a{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--beige);text-decoration:none;text-shadow:1px 1px 0 rgba(0,0,0,.4);transition:color 150ms;padding:4px 0;min-height:44px;display:flex;align-items:center}
+    .nav-links a:hover{color:var(--yellow)}
+    .hamburger{display:flex;flex-direction:column;gap:5px;cursor:pointer;padding:8px;background:none;border:none;min-width:44px;min-height:44px;align-items:center;justify-content:center}
+    .hamburger span{display:block;width:22px;height:3px;background:var(--beige);transition:all 200ms}
+    .mobile-nav{
+      display:none;position:fixed;top:60px;left:0;right:0;
+      background:var(--dirt-dark);border-bottom:4px solid var(--dirt);
+      z-index:199;padding:8px 16px;flex-direction:column;gap:0;
+    }
+    .mobile-nav.open{display:flex}
+    .mobile-nav a{font-family:'Press Start 2P',monospace;font-size:8px;color:var(--beige);text-decoration:none;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08);transition:color 150ms;min-height:48px;display:flex;align-items:center}
+    .mobile-nav a:hover{color:var(--yellow)}
+
+    /* ══════════════════════════════════
+       GRASS SEPARATOR
+    ══════════════════════════════════ */
+    .grass-sep{height:20px;background:repeating-linear-gradient(90deg,var(--grass-light) 0,var(--grass-light) 16px,var(--grass) 16px,var(--grass) 32px);border-top:3px solid var(--grass-bright);border-bottom:3px solid var(--dirt)}
+
+    /* ══════════════════════════════════
+       SECTIONS — mobile base
+    ══════════════════════════════════ */
+    .sec{padding:52px 16px;max-width:1180px;margin:0 auto}
+    .sec-head{text-align:center;margin-bottom:40px}
+    .sec-title{font-family:'Press Start 2P',monospace;font-size:13px;color:var(--grass);text-shadow:3px 3px 0 var(--brown-acc);margin-bottom:14px;line-height:1.7}
+    .sec-title-light{color:var(--yellow);text-shadow:3px 3px 0 rgba(0,0,0,.5)}
+    .sec-sub{font-size:14px;color:var(--text-mid);line-height:1.75;max-width:600px;margin:0 auto}
+    .sec-sub-light{color:#C8DDB0}
+
+    /* Reveal animation */
+    .reveal{opacity:0;transform:translateY(20px);transition:opacity 500ms,transform 500ms}
+    .reveal.in{opacity:1;transform:none}
+
+    /* ══════════════════════════════════
+       HERO — mobile base
+    ══════════════════════════════════ */
+    #hero{
+      position:relative;min-height:100svh;overflow:hidden;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      text-align:center;padding-top:60px;
+    }
+    .sky-bg{position:absolute;inset:0;background:linear-gradient(to bottom,var(--sky-top) 0%,var(--sky-mid) 45%,var(--sky-bot) 100%);z-index:0}
+    .clouds{position:absolute;inset:0;z-index:1;overflow:hidden;pointer-events:none}
+    .cloud{position:absolute;background:rgba(255,255,255,.92)}
+    .cloud-a{width:80px;height:20px;top:14%;animation:cld 55s linear infinite;animation-delay:-5s}
+    .cloud-b{width:120px;height:26px;top:26%;animation:cld 75s linear infinite;animation-delay:-28s}
+    .cloud-c{width:64px;height:20px;top:10%;animation:cld 90s linear infinite;animation-delay:-60s}
+    .cloud-d{width:100px;height:20px;top:36%;animation:cld 65s linear infinite;animation-delay:-40s}
+    @keyframes cld{from{left:-250px}to{left:110vw}}
+
+    /* Trees — hidden on mobile */
+    .trees{display:none;position:absolute;bottom:72px;left:0;right:0;z-index:2;pointer-events:none;justify-content:space-between;padding:0 2%}
+    .tree{display:flex;flex-direction:column;align-items:center}
+    .tree-top{background:#2E7D32;box-shadow:inset -4px -4px 0 rgba(0,0,0,.3),inset 4px 4px 0 rgba(255,255,255,.08)}
+    .tree-top-a{width:56px;height:56px}.tree-top-b{width:40px;height:40px}
+    .tree-mid-inner{background:#388E3C;box-shadow:inset -3px -3px 0 rgba(0,0,0,.25)}
+    .tree-trunk{background:#5D4037;box-shadow:inset -2px -2px 0 rgba(0,0,0,.3)}
+    .tree-trunk-a{width:16px;height:40px}.tree-trunk-b{width:12px;height:28px}
+
+    /* Ground */
+    .ground{position:absolute;bottom:0;left:0;right:0;z-index:2}
+    .grass-strip{height:22px;background:repeating-linear-gradient(90deg,var(--grass-light) 0,var(--grass-light) 16px,var(--grass) 16px,var(--grass) 32px);border-top:3px solid var(--grass-bright)}
+    .dirt-strip{height:50px;background:repeating-linear-gradient(90deg,var(--dirt) 0,var(--dirt) 16px,var(--dirt-mid) 16px,var(--dirt-mid) 32px)}
+
+    /* Hero content */
+    .hero-inner{position:relative;z-index:5;padding:24px 14px 100px;display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
+    .hero-logo{width:140px;height:auto;filter:drop-shadow(0 6px 16px rgba(0,0,0,.45));animation:float 3.5s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    .hero-box{background:rgba(20,12,2,.8);border:3px solid var(--yellow);padding:18px 14px;width:100%;max-width:700px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04),5px 5px 0 rgba(0,0,0,.4)}
+    .hero-title{font-family:'Press Start 2P',monospace;font-size:28px;color:var(--yellow);text-shadow:3px 3px 0 rgba(0,0,0,.6);margin-bottom:12px;line-height:1.3}
+    .hero-sub{font-family:'Press Start 2P',monospace;font-size:8px;color:#F0E8D8;text-shadow:2px 2px 0 rgba(0,0,0,.65);line-height:2;margin-bottom:10px}
+    .hero-text{font-size:13px;color:#D8CEBC;line-height:1.75;margin-bottom:20px}
+    .hero-btns{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+    .hero-btns .btn{width:100%;max-width:320px;font-size:8px}
+
+    /* ══════════════════════════════════
+       QUÉ ES — mobile base
+    ══════════════════════════════════ */
+    #que-es{background:var(--beige);position:relative}
+    #que-es::before{content:'';position:absolute;top:0;left:0;right:0;height:8px;background:repeating-linear-gradient(90deg,var(--grass-light) 0,var(--grass-light) 16px,var(--grass) 16px,var(--grass) 32px)}
+    .qes-grid{display:grid;grid-template-columns:1fr;gap:32px}
+    .qes-text h2{font-family:'Press Start 2P',monospace;font-size:13px;color:var(--grass);text-shadow:2px 2px 0 var(--brown-acc);margin-bottom:16px;line-height:1.8}
+    .qes-text p{font-size:14px;line-height:1.85;color:var(--text-mid);margin-bottom:14px}
+    .qes-text strong{color:var(--grass);font-weight:700}
+    .icon-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .icon-card{background:#fff;border:3px solid var(--dirt);padding:16px 12px;text-align:center;box-shadow:4px 4px 0 var(--brown-acc);transition:transform 150ms,box-shadow 150ms;cursor:default}
+    .icon-card:active{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--brown-acc)}
+    .icon-card svg{width:36px;height:36px;margin-bottom:8px}
+    .icon-card h4{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--grass);margin-bottom:5px;line-height:1.8}
+    .icon-card p{font-size:11px;color:var(--text-light);line-height:1.55}
+
+    /* ══════════════════════════════════
+       CÓMO FUNCIONA — mobile base
+    ══════════════════════════════════ */
+    #como-funciona{background:var(--grass)}
+    .steps-grid{display:grid;grid-template-columns:1fr;gap:16px}
+    .step-card{background:var(--beige);border:3px solid var(--dirt-dark);padding:22px 16px;text-align:center;box-shadow:inset -3px -3px 0 rgba(0,0,0,.18),inset 3px 3px 0 rgba(255,255,255,.12),5px 5px 0 rgba(0,0,0,.22)}
+    .step-num{font-family:'Press Start 2P',monospace;font-size:22px;color:var(--green-mc);text-shadow:3px 3px 0 rgba(0,0,0,.35);margin-bottom:12px;display:block}
+    .step-icon{width:64px;height:64px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center}
+    .step-card h3{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--grass);margin-bottom:8px;line-height:1.8}
+    .step-card p{font-size:13px;color:var(--text-mid);line-height:1.65}
+
+    /* ══════════════════════════════════
+       COLECCIÓN — mobile base
+    ══════════════════════════════════ */
+    #coleccion{background:var(--beige)}
+    .products-grid{display:grid;grid-template-columns:1fr;gap:24px}
+    .product-card{background:#fff;border:3px solid var(--dirt);box-shadow:5px 5px 0 var(--brown-acc);overflow:hidden;transition:transform 150ms,box-shadow 150ms}
+    .product-card:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--brown-acc)}
+    .prod-img{position:relative;height:260px;background:#F0E6D0;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:zoom-in}
+    .prod-img img{width:100%;height:100%;object-fit:cover;transition:transform 300ms}
+    .product-card:hover .prod-img img{transform:scale(1.05)}
+    .badge{position:absolute;top:10px;right:10px;font-family:'Press Start 2P',monospace;font-size:6px;padding:6px 10px;box-shadow:2px 2px 0 rgba(0,0,0,.35)}
+    .badge-avail{background:var(--green-mc);color:#fff}
+    .badge-soon{background:var(--yellow);color:var(--brown-acc)}
+    .prod-info{padding:16px;border-top:3px solid var(--beige-mid)}
+    .prod-name{font-family:'Press Start 2P',monospace;font-size:10px;color:var(--grass);text-shadow:1px 1px 0 rgba(0,0,0,.15);margin-bottom:7px;line-height:1.6}
+    .prod-desc{font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:10px}
+    .prod-diff{display:flex;align-items:center;gap:7px;margin-bottom:14px}
+    .diff-lbl{font-family:'Press Start 2P',monospace;font-size:5.5px;color:var(--text-light)}
+    .dots{display:flex;gap:4px}
+    .dot{width:9px;height:9px;border:2px solid var(--dirt)}
+    .dot.on{background:var(--green-mc)}
+    .prod-btn{width:100%;display:block;font-size:8px;padding:13px}
+
+    /* Mystery card */
+    .mystery-img{background:var(--dirt)!important;cursor:default!important}
+    .mystery-q{font-family:'Press Start 2P',monospace;font-size:72px;color:var(--yellow);text-shadow:4px 4px 0 rgba(0,0,0,.5),0 0 32px rgba(253,230,138,.25);user-select:none;line-height:1}
+    .mystery-card{opacity:.88}
+    .mystery-name{color:var(--text-light)!important}
+    .mystery-desc{color:var(--text-light)!important;font-style:italic}
+
+    /* ══════════════════════════════════
+       PROCESO — mobile base
+    ══════════════════════════════════ */
+    #proceso{background:var(--beige)}
+    .proceso-grid{display:grid;grid-template-columns:1fr;gap:16px}
+    .proc-card{background:#fff;border:3px solid var(--dirt);overflow:hidden;box-shadow:4px 4px 0 var(--brown-acc)}
+    .proc-img{height:150px;background:#F0E6D0;display:flex;align-items:center;justify-content:center;border-bottom:3px solid var(--dirt)}
+    .proc-img svg{width:72px;height:72px}
+    .proc-lbl{padding:14px}
+    .proc-lbl h4{font-family:'Press Start 2P',monospace;font-size:7.5px;color:var(--grass);margin-bottom:6px;line-height:1.6}
+    .proc-lbl p{font-size:12px;color:var(--text-mid);line-height:1.55}
+
+    /* ══════════════════════════════════
+       VALORES — mobile base
+    ══════════════════════════════════ */
+    #valores{background:var(--grass)}
+    .valores-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .val-card{background:var(--beige);border:3px solid var(--dirt-dark);padding:20px 14px;text-align:center;box-shadow:4px 4px 0 rgba(0,0,0,.2);transition:transform 150ms,box-shadow 150ms}
+    .val-card:active{transform:translate(-1px,-1px);box-shadow:5px 5px 0 rgba(0,0,0,.2)}
+    .val-icon{width:48px;height:48px;margin:0 auto 12px}
+    .val-card h3{font-family:'Press Start 2P',monospace;font-size:6px;color:var(--grass);margin-bottom:6px;line-height:2}
+    .val-card p{font-size:11px;color:var(--text-mid);line-height:1.6}
+
+    /* ══════════════════════════════════
+       FOOTER — mobile base
+    ══════════════════════════════════ */
+    footer{background:var(--dirt-dark);position:relative;overflow:hidden}
+    footer::before{content:'';position:absolute;top:0;left:0;right:0;height:12px;background:repeating-linear-gradient(90deg,var(--grass-light) 0,var(--grass-light) 16px,var(--grass) 16px,var(--grass) 32px)}
+    .footer-inner{max-width:1180px;margin:0 auto;padding:56px 16px 32px;display:grid;grid-template-columns:1fr;gap:28px;text-align:center}
+    .footer-logo-wrap{display:flex;flex-direction:column;align-items:center;gap:8px}
+    .footer-logo-wrap img{width:80px;height:auto;image-rendering:pixelated}
+    .footer-tagline{font-family:'Press Start 2P',monospace;font-size:7px;color:var(--yellow);text-shadow:1px 1px 0 rgba(0,0,0,.5);letter-spacing:1px;line-height:1.8}
+    .footer-center h3{font-family:'Press Start 2P',monospace;font-size:12px;color:var(--yellow);text-shadow:2px 2px 0 rgba(0,0,0,.5);margin-bottom:10px;line-height:1.7}
+    .footer-center p{font-size:13px;color:#C8B89A;line-height:1.75}
+    .footer-social{display:flex;flex-direction:column;align-items:center;gap:10px}
+    .soc-link{display:flex;align-items:center;gap:10px;text-decoration:none;color:#C8B89A;font-family:'Press Start 2P',monospace;font-size:6.5px;transition:color 150ms;min-height:44px}
+    .soc-link:hover{color:var(--yellow)}
+    .soc-icon{width:32px;height:32px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .footer-bottom{border-top:2px solid rgba(255,255,255,.08);text-align:center;padding:18px 16px;font-size:10px;color:rgba(255,255,255,.3)}
+
+    /* ══════════════════════════════════
+       WHATSAPP FLOAT — mobile base
+    ══════════════════════════════════ */
+    .wa-float{position:fixed;bottom:14px;right:14px;z-index:999;display:flex;align-items:center;gap:8px}
+    .wa-tip{background:var(--dirt-dark);color:var(--beige);font-family:'Press Start 2P',monospace;font-size:6px;padding:7px 10px;box-shadow:3px 3px 0 rgba(0,0,0,.4);border:2px solid rgba(255,255,255,.1);opacity:0;pointer-events:none;transition:opacity 200ms;white-space:nowrap}
+    .wa-float:hover .wa-tip{opacity:1}
+    .wa-btn{width:58px;height:58px;background:#25D366;border:3px solid #128C7E;box-shadow:inset -3px -3px 0 rgba(0,0,0,.28),inset 3px 3px 0 rgba(255,255,255,.18),0 5px 0 #128C7E,0 7px 16px rgba(0,0,0,.28);cursor:pointer;display:flex;align-items:center;justify-content:center;text-decoration:none;animation:waShake 2.4s ease-in-out infinite;flex-shrink:0}
+    .wa-btn:hover{animation:none;transform:scale(1.08)}
+    @keyframes waShake{0%,78%,100%{transform:rotate(0)}82%{transform:rotate(-9deg)}86%{transform:rotate(9deg)}90%{transform:rotate(-5deg)}93%{transform:rotate(5deg)}}
+
+    /* ══════════════════════════════════
+       LIGHTBOX
+    ══════════════════════════════════ */
+    #lb{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;align-items:center;justify-content:center;padding:16px}
+    #lb.open{display:flex}
+    #lb-inner{max-width:560px;width:100%;background:var(--beige);border:4px solid var(--dirt);box-shadow:0 0 0 2px var(--dirt-dark),8px 8px 0 rgba(0,0,0,.5);position:relative;overflow:hidden}
+    #lb-content img{width:100%;height:auto;display:block;max-height:75vh;object-fit:contain}
+    #lb-close{position:absolute;top:8px;right:8px;background:#B91C1C;color:#fff;border:none;font-family:'Press Start 2P',monospace;font-size:8px;padding:9px 12px;cursor:pointer;box-shadow:inset -2px -2px 0 rgba(0,0,0,.35);z-index:1;min-height:44px;min-width:44px}
+    #lb-close:hover{background:#DC2626}
+
+    /* ══════════════════════════════════
+       BREAKPOINTS — tablet 640px
+    ══════════════════════════════════ */
+    @media(min-width:640px){
+      .hero-logo{width:180px}
+      .hero-title{font-size:36px}
+      .hero-sub{font-size:9px}
+      .hero-text{font-size:14px}
+      .hero-btns{flex-direction:row;justify-content:center;width:auto}
+      .hero-btns .btn{width:auto;max-width:none}
+      .hero-box{padding:20px 24px}
+
+      .sec{padding:64px 20px}
+      .sec-title{font-size:15px}
+
+      .steps-grid{grid-template-columns:1fr 1fr;gap:16px}
+      .products-grid{grid-template-columns:1fr 1fr}
+      .proceso-grid{grid-template-columns:1fr 1fr}
+
+      .trees{display:flex}
+      .ground .dirt-strip{height:56px}
+      .hero-inner{padding-bottom:120px}
+
+      .footer-inner{grid-template-columns:1fr 1fr;text-align:left}
+      .footer-logo-wrap{align-items:flex-start}
+      .footer-social{align-items:flex-start}
+      .footer-center{grid-column:1/-1;order:-1;text-align:center}
+    }
+
+    /* ══════════════════════════════════
+       BREAKPOINTS — desktop 1024px
+    ══════════════════════════════════ */
+    @media(min-width:1024px){
+      nav{padding:10px 28px;height:68px}
+      .nav-brand{font-size:11px}
+      .nav-logo img{height:44px;width:44px}
+      .nav-links{display:flex}
+      .hamburger{display:none}
+      .mobile-nav{top:68px}
+
+      #hero{padding-top:68px}
+      .hero-logo{width:260px}
+      .hero-title{font-size:52px}
+      .hero-sub{font-size:12px}
+      .hero-text{font-size:16px}
+      .hero-box{padding:24px 32px}
+
+      .sec{padding:80px 24px}
+      .sec-title{font-size:20px}
+      .sec-sub{font-size:17px}
+      .sec-head{margin-bottom:56px}
+
+      .qes-grid{grid-template-columns:1fr 1fr;gap:52px;align-items:center}
+      .qes-text h2{font-size:18px}
+      .qes-text p{font-size:15px}
+      .icon-card svg{width:40px;height:40px}
+      .icon-card h4{font-size:6.5px}
+      .icon-card p{font-size:12px}
+
+      .steps-grid{grid-template-columns:repeat(4,1fr);gap:20px}
+      .step-num{font-size:26px}
+      .step-icon{width:72px;height:72px}
+      .step-card h3{font-size:7.5px}
+
+      .products-grid{grid-template-columns:repeat(3,1fr);gap:28px}
+      .prod-img{height:280px}
+      .prod-name{font-size:10px}
+      .mystery-q{font-size:80px}
+
+      .proceso-grid{grid-template-columns:repeat(3,1fr);gap:20px}
+      .proc-img{height:170px}
+
+      .valores-grid{grid-template-columns:repeat(4,1fr);gap:20px}
+      .val-card{padding:24px 16px}
+      .val-icon{width:56px;height:56px}
+      .val-card h3{font-size:6.5px}
+      .val-card p{font-size:12px}
+      .val-card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 rgba(0,0,0,.22)}
+
+      .footer-inner{grid-template-columns:1fr 2fr 1fr;gap:40px}
+      .footer-center{grid-column:auto;order:0;text-align:center}
+      .footer-logo-wrap img{width:90px}
+      .footer-center h3{font-size:13px}
+
+      .wa-float{right:26px;bottom:26px}
+      .wa-btn{width:62px;height:62px}
+
+      .icon-card:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--brown-acc)}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ NAVBAR ════════════════════════════════ -->
+<nav>
+  <a href="#" class="nav-logo">
+    <img src="frogui.png" alt="FROGUI">
+    <span class="nav-brand">FROGUI</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#que-es">¿Qué es?</a></li>
+    <li><a href="#como-funciona">Cómo funciona</a></li>
+    <li><a href="#coleccion">Colección</a></li>
+    <li><a href="#proceso">Proceso</a></li>
+    <li><a href="#footer-sec">Contacto</a></li>
+  </ul>
+  <button class="hamburger" onclick="toggleNav()" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<nav class="mobile-nav" id="mNav">
+  <a href="#que-es" onclick="toggleNav()">¿Qué es FROGUI?</a>
+  <a href="#como-funciona" onclick="toggleNav()">¿Cómo funciona?</a>
+  <a href="#coleccion" onclick="toggleNav()">Colección</a>
+  <a href="#proceso" onclick="toggleNav()">Proceso</a>
+  <a href="#valores" onclick="toggleNav()">Nosotros</a>
+</nav>
+
+<!-- ══ HERO ══════════════════════════════════ -->
+<section id="hero">
+  <div class="sky-bg"></div>
+  <div class="clouds" aria-hidden="true">
+    <div class="cloud cloud-a" style="left:-180px"></div>
+    <div class="cloud cloud-b" style="left:-280px"></div>
+    <div class="cloud cloud-c" style="left:30vw"></div>
+    <div class="cloud cloud-d" style="left:65vw"></div>
+  </div>
+
+  <div class="trees" aria-hidden="true">
+    <div class="tree" style="transform:scale(.8);transform-origin:bottom center">
+      <div class="tree-mid-inner" style="width:42px;height:18px"></div>
+      <div class="tree-top tree-top-b"></div>
+      <div class="tree-trunk tree-trunk-b"></div>
+    </div>
+    <div class="tree">
+      <div class="tree-mid-inner" style="width:44px;height:18px;background:#2E7D32"></div>
+      <div class="tree-top tree-top-a"></div>
+      <div class="tree-trunk tree-trunk-a"></div>
+    </div>
+    <div style="width:1px"></div>
+    <div class="tree">
+      <div class="tree-mid-inner" style="width:44px;height:18px;background:#2E7D32"></div>
+      <div class="tree-top tree-top-a"></div>
+      <div class="tree-trunk tree-trunk-a"></div>
+    </div>
+    <div class="tree" style="transform:scale(.75);transform-origin:bottom center">
+      <div class="tree-mid-inner" style="width:36px;height:16px"></div>
+      <div class="tree-top tree-top-b"></div>
+      <div class="tree-trunk tree-trunk-b"></div>
+    </div>
+  </div>
+
+  <div class="hero-inner">
+    <img src="frogui.png" alt="FROGUI Logo" class="hero-logo">
+    <div class="hero-box">
+      <div class="hero-title">FROGUI</div>
+      <div class="hero-sub">Creá, pintá y disfrutá tu propia aventura creativa.</div>
+      <p class="hero-text">Figuras de cartón inspiradas en Minecraft y otros personajes para pintar, personalizar y disfrutar en familia.</p>
+      <div class="hero-btns">
+        <a href="#coleccion" class="btn btn-green">Ver Colección</a>
+        <a href="https://wa.me/TUTELEFONO?text=Hola%2C+quiero+consultar+por+los+productos+de+FROGUI." class="btn btn-wa" target="_blank" rel="noopener">Consultá por WhatsApp</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="ground" aria-hidden="true">
+    <div class="grass-strip"></div>
+    <div class="dirt-strip"></div>
+  </div>
+</section>
+
+<!-- ══ QUÉ ES FROGUI ══════════════════════════ -->
+<section id="que-es">
+  <div class="sec">
+    <div class="qes-grid">
+      <div class="qes-text reveal">
+        <h2>¿Qué es FROGUI?</h2>
+        <p>FROGUI es un proyecto creativo donde transformamos personajes y criaturas inspiradas en Minecraft en <strong>figuras de cartón listas para pintar y personalizar</strong>.</p>
+        <p>Cada pieza está pensada para convertirse en una actividad divertida y creativa para <strong>todas las edades</strong>. No vendemos solo figuras — vendemos la experiencia de crearlas.</p>
+        <br>
+        <a href="#como-funciona" class="btn btn-green" style="font-size:8px;padding:12px 18px">¿Cómo funciona?</a>
+      </div>
+      <div class="icon-grid reveal">
+        <div class="icon-card">
+          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+            <rect x="9" y="0" width="2" height="1" fill="#8B5523"/><rect x="8" y="1" width="4" height="1" fill="#8B5523"/>
+            <rect x="8" y="2" width="3" height="1" fill="#9A6030"/><rect x="7" y="3" width="3" height="1" fill="#9A6030"/>
+            <rect x="6" y="4" width="3" height="1" fill="#9A6030"/><rect x="5" y="5" width="3" height="1" fill="#9A6030"/>
+            <rect x="4" y="6" width="3" height="1" fill="#9A6030"/><rect x="3" y="7" width="3" height="1" fill="#9A6030"/>
+            <rect x="2" y="8" width="3" height="1" fill="#9A6030"/><rect x="2" y="9" width="2" height="1" fill="#9A6030"/>
+            <rect x="2" y="10" width="2" height="1" fill="#4488DD"/><rect x="1" y="11" width="4" height="1" fill="#4488DD"/>
+            <rect x="1" y="12" width="4" height="1" fill="#3366CC"/><rect x="1" y="13" width="4" height="1" fill="#3366CC"/>
+            <rect x="2" y="14" width="2" height="2" fill="#2255BB"/>
+          </svg>
+          <h4>Creatividad</h4>
+          <p>Cada figura se convierte en tu creación única.</p>
+        </div>
+        <div class="icon-card">
+          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+            <rect x="1" y="4" width="4" height="3" fill="#E74C3C"/><rect x="2" y="3" width="3" height="1" fill="#E74C3C"/>
+            <rect x="3" y="2" width="2" height="1" fill="#E74C3C"/><rect x="5" y="3" width="2" height="1" fill="#E74C3C"/>
+            <rect x="5" y="4" width="3" height="3" fill="#E74C3C"/><rect x="9" y="4" width="4" height="3" fill="#E74C3C"/>
+            <rect x="9" y="3" width="3" height="1" fill="#E74C3C"/><rect x="10" y="2" width="2" height="1" fill="#E74C3C"/>
+            <rect x="7" y="4" width="2" height="2" fill="#E74C3C"/><rect x="2" y="7" width="12" height="2" fill="#E74C3C"/>
+            <rect x="3" y="9" width="10" height="2" fill="#E74C3C"/><rect x="4" y="11" width="8" height="2" fill="#E74C3C"/>
+            <rect x="5" y="13" width="6" height="1" fill="#E74C3C"/><rect x="6" y="14" width="4" height="1" fill="#E74C3C"/>
+            <rect x="7" y="15" width="2" height="1" fill="#E74C3C"/>
+          </svg>
+          <h4>Para la familia</h4>
+          <p>Momentos de calidad para compartir juntos.</p>
+        </div>
+        <div class="icon-card">
+          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+            <rect x="1" y="2" width="14" height="9" fill="#44A537"/><rect x="2" y="3" width="12" height="7" fill="#2E7D32"/>
+            <rect x="5" y="11" width="6" height="1" fill="#44A537"/><rect x="5" y="12" width="6" height="1" fill="#44A537"/>
+            <rect x="4" y="13" width="8" height="1" fill="#44A537"/>
+            <rect x="2" y="3" width="2" height="2" fill="#E74C3C"/><rect x="4" y="5" width="2" height="2" fill="#E74C3C"/>
+            <rect x="6" y="7" width="2" height="2" fill="#E74C3C"/><rect x="10" y="3" width="2" height="2" fill="#E74C3C"/>
+            <rect x="8" y="5" width="2" height="2" fill="#E74C3C"/>
+          </svg>
+          <h4>Menos pantallas</h4>
+          <p>Actividades reales que fomentan la imaginación.</p>
+        </div>
+        <div class="icon-card">
+          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+            <rect x="7" y="0" width="2" height="2" fill="#F59E0B"/><rect x="6" y="2" width="4" height="1" fill="#F59E0B"/>
+            <rect x="0" y="5" width="3" height="2" fill="#F59E0B"/><rect x="13" y="5" width="3" height="2" fill="#F59E0B"/>
+            <rect x="3" y="4" width="10" height="8" fill="#F59E0B"/><rect x="2" y="5" width="12" height="6" fill="#F59E0B"/>
+            <rect x="4" y="3" width="8" height="10" fill="#F59E0B"/><rect x="5" y="2" width="6" height="12" fill="#FBBF24"/>
+            <rect x="6" y="1" width="4" height="2" fill="#FBBF24"/><rect x="3" y="5" width="10" height="6" fill="#FBBF24"/>
+            <rect x="4" y="13" width="8" height="2" fill="#D97706"/>
+          </svg>
+          <h4>Calidad artesanal</h4>
+          <p>Diseñado con dedicación y amor.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="grass-sep" aria-hidden="true"></div>
+
+<!-- ══ CÓMO FUNCIONA ══════════════════════════ -->
+<section id="como-funciona">
+  <div class="sec">
+    <div class="sec-head">
+      <h2 class="sec-title sec-title-light">¿Cómo funciona?</h2>
+      <p class="sec-sub sec-sub-light">Del personaje que elegís a la creación que hacés tuya.</p>
+    </div>
+    <div class="steps-grid">
+
+      <div class="step-card reveal">
+        <span class="step-num">01</span>
+        <div class="step-icon">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;width:64px;height:64px">
+            <rect x="5" y="5" width="6" height="6" fill="#3A8A2A"/><rect x="21" y="5" width="6" height="6" fill="#3A8A2A"/>
+            <rect x="6" y="6" width="4" height="4" fill="#111"/><rect x="22" y="6" width="4" height="4" fill="#111"/>
+            <rect x="6" y="6" width="2" height="2" fill="#eee"/><rect x="22" y="6" width="2" height="2" fill="#eee"/>
+            <rect x="8" y="8" width="2" height="2" fill="#111"/><rect x="24" y="8" width="2" height="2" fill="#111"/>
+            <rect x="4" y="10" width="24" height="12" fill="#44A537"/>
+            <rect x="8" y="16" width="16" height="8" fill="#7BC241"/>
+            <rect x="10" y="22" width="12" height="2" fill="#2D6A1F"/>
+            <rect x="0" y="17" width="8" height="6" fill="#3A8A2A"/><rect x="24" y="17" width="8" height="6" fill="#3A8A2A"/>
+            <rect x="0" y="21" width="10" height="4" fill="#3A8A2A"/><rect x="22" y="21" width="10" height="4" fill="#3A8A2A"/>
+          </svg>
+        </div>
+        <h3>Elegí tu personaje</h3>
+        <p>Ranas, ajolotes, abejas y futuras creaciones del mundo FROGUI.</p>
+      </div>
+
+      <div class="step-card reveal">
+        <span class="step-num">02</span>
+        <div class="step-icon">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;width:64px;height:64px">
+            <rect x="4" y="8" width="24" height="4" fill="#E8C878"/><rect x="12" y="8" width="8" height="4" fill="#D4B055"/>
+            <rect x="4" y="12" width="24" height="16" fill="#D4A853"/><rect x="4" y="12" width="24" height="4" fill="#C89040"/>
+            <rect x="12" y="12" width="8" height="16" fill="#C89040"/>
+            <rect x="14" y="4" width="4" height="4" fill="#E74C3C"/>
+            <rect x="10" y="6" width="4" height="2" fill="#E74C3C"/><rect x="18" y="6" width="4" height="2" fill="#E74C3C"/>
+          </svg>
+        </div>
+        <h3>Recibí tu figura</h3>
+        <p>Lista para empezar a crear, directamente en tus manos.</p>
+      </div>
+
+      <div class="step-card reveal">
+        <span class="step-num">03</span>
+        <div class="step-icon">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;width:64px;height:64px">
+            <rect x="3" y="6" width="18" height="16" fill="#F5E6C8"/><rect x="3" y="6" width="18" height="2" fill="#E0D0AA"/>
+            <rect x="3" y="20" width="18" height="2" fill="#E0D0AA"/>
+            <rect x="6" y="9" width="4" height="4" fill="#E74C3C"/><rect x="12" y="9" width="4" height="4" fill="#3498DB"/>
+            <rect x="6" y="15" width="4" height="4" fill="#F1C40F"/><rect x="12" y="15" width="4" height="4" fill="#2ECC71"/>
+            <rect x="22" y="0" width="4" height="4" fill="#A0622D"/><rect x="23" y="4" width="3" height="18" fill="#8B5523"/>
+            <rect x="23" y="22" width="3" height="4" fill="#3498DB"/>
+          </svg>
+        </div>
+        <h3>Pintala a tu manera</h3>
+        <p>Cada persona crea una versión completamente única e irrepetible.</p>
+      </div>
+
+      <div class="step-card reveal">
+        <span class="step-num">04</span>
+        <div class="step-icon">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;width:64px;height:64px">
+            <rect x="6" y="6" width="20" height="6" fill="#FBBF24"/><rect x="8" y="8" width="16" height="12" fill="#F59E0B"/>
+            <rect x="6" y="8" width="2" height="10" fill="#FBBF24"/><rect x="24" y="8" width="2" height="10" fill="#FBBF24"/>
+            <rect x="13" y="20" width="6" height="4" fill="#F59E0B"/><rect x="10" y="24" width="12" height="2" fill="#D97706"/>
+            <rect x="15" y="9" width="2" height="2" fill="#fff"/>
+            <rect x="14" y="10" width="4" height="2" fill="#fff"/><rect x="13" y="11" width="6" height="2" fill="#fff"/>
+            <rect x="14" y="13" width="4" height="2" fill="#fff"/>
+            <rect x="13" y="12" width="2" height="2" fill="#fff"/><rect x="17" y="12" width="2" height="2" fill="#fff"/>
+          </svg>
+        </div>
+        <h3>Disfrutá el resultado</h3>
+        <p>Una pieza hecha por vos para coleccionar, regalar o exponer.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="grass-sep" aria-hidden="true"></div>
+
+<!-- ══ COLECCIÓN ══════════════════════════════ -->
+<section id="coleccion">
+  <div class="sec">
+    <div class="sec-head">
+      <h2 class="sec-title">Colección</h2>
+      <p class="sec-sub">Cada figura es una aventura creativa esperando ser pintada.</p>
+    </div>
+    <div class="products-grid">
+
+      <!-- Rana Minecraft — FOTO REAL -->
+      <div class="product-card reveal" onclick="openLb(this)" role="button" tabindex="0" aria-label="Ver Rana Minecraft ampliada">
+        <div class="prod-img">
+          <img src="rana.png" alt="Rana Minecraft en cartón — FROGUI" loading="eager">
+          <span class="badge badge-avail">Disponible</span>
+        </div>
+        <div class="prod-info">
+          <div class="prod-name">Rana Minecraft</div>
+          <p class="prod-desc">La criatura más emblemática de FROGUI. Lista para que le des tu toque personal.</p>
+          <div class="prod-diff">
+            <span class="diff-lbl">Dificultad:</span>
+            <div class="dots">
+              <div class="dot on"></div><div class="dot on"></div><div class="dot"></div>
+            </div>
+          </div>
+          <a href="https://wa.me/TUTELEFONO?text=Hola%2C+quiero+consultar+por+este+producto%3A+Rana+Minecraft" class="btn btn-yellow prod-btn" target="_blank" rel="noopener" onclick="event.stopPropagation()">Pedí el tuyo ahora</a>
+        </div>
+      </div>
+
+      <!-- Misterio 1 -->
+      <div class="product-card mystery-card reveal" style="cursor:default">
+        <div class="prod-img mystery-img">
+          <span class="mystery-q" aria-hidden="true">?</span>
+          <span class="badge badge-soon">Próximamente</span>
+        </div>
+        <div class="prod-info">
+          <div class="prod-name mystery-name">??? ???</div>
+          <p class="prod-desc mystery-desc">¿Qué criatura llegará al mundo FROGUI? Mantente atento...</p>
+          <div class="prod-diff">
+            <span class="diff-lbl">Dificultad:</span>
+            <div class="dots">
+              <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+          </div>
+          <span class="btn btn-yellow prod-btn" style="opacity:.5;cursor:not-allowed;display:block;text-align:center">Próximamente</span>
+        </div>
+      </div>
+
+      <!-- Misterio 2 -->
+      <div class="product-card mystery-card reveal" style="cursor:default">
+        <div class="prod-img mystery-img">
+          <span class="mystery-q" aria-hidden="true">?</span>
+          <span class="badge badge-soon">Próximamente</span>
+        </div>
+        <div class="prod-info">
+          <div class="prod-name mystery-name">??? ???</div>
+          <p class="prod-desc mystery-desc">Un nuevo personaje se está preparando. ¿Podés adivinar quién es?</p>
+          <div class="prod-diff">
+            <span class="diff-lbl">Dificultad:</span>
+            <div class="dots">
+              <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+          </div>
+          <span class="btn btn-yellow prod-btn" style="opacity:.5;cursor:not-allowed;display:block;text-align:center">Próximamente</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="grass-sep" aria-hidden="true"></div>
+
+<!-- ══ PROCESO ════════════════════════════════ -->
+<section id="proceso">
+  <div class="sec">
+    <div class="sec-head">
+      <h2 class="sec-title">Del cartón a tu próxima creación</h2>
+      <p class="sec-sub">Así nacen las figuras FROGUI, paso a paso.</p>
+    </div>
+    <div class="proceso-grid">
+
+      <div class="proc-card reveal">
+        <div class="proc-img">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+            <rect x="4" y="4" width="22" height="26" fill="#F5E6C8"/><rect x="4" y="4" width="22" height="2" fill="#E0CEAA"/>
+            <rect x="7" y="8" width="14" height="2" fill="#D4BC88"/><rect x="7" y="12" width="14" height="2" fill="#D4BC88"/>
+            <rect x="7" y="16" width="10" height="2" fill="#D4BC88"/>
+            <rect x="20" y="14" width="4" height="14" fill="#FBBF24"/><rect x="20" y="12" width="4" height="3" fill="#8B5523"/>
+            <rect x="21" y="26" width="2" height="3" fill="#F5D682"/><rect x="21" y="28" width="2" height="2" fill="#E8A87C"/>
+          </svg>
+        </div>
+        <div class="proc-lbl">
+          <h4>1. Diseño</h4>
+          <p>Cada personaje nace en papel. Boceto, proporciones, detalle.</p>
+        </div>
+      </div>
+
+      <div class="proc-card reveal">
+        <div class="proc-img">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+            <rect x="6" y="14" width="10" height="4" fill="#9B9B9B"/><rect x="16" y="14" width="10" height="4" fill="#9B9B9B"/>
+            <rect x="4" y="10" width="8" height="8" fill="#7A7A7A"/><rect x="20" y="10" width="8" height="8" fill="#7A7A7A"/>
+            <rect x="6" y="13" width="4" height="6" fill="#B0B0B0"/><rect x="22" y="13" width="4" height="6" fill="#B0B0B0"/>
+            <rect x="10" y="15" width="12" height="2" fill="#C0C0C0"/>
+            <rect x="8" y="4" width="16" height="10" fill="#E8D5A3"/><rect x="8" y="4" width="16" height="2" fill="#D4BC88"/>
+          </svg>
+        </div>
+        <div class="proc-lbl">
+          <h4>2. Corte</h4>
+          <p>Precisión en cada línea. El cartón toma la forma del personaje.</p>
+        </div>
+      </div>
+
+      <div class="proc-card reveal">
+        <div class="proc-img">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+            <rect x="2" y="6" width="12" height="10" fill="#E8D5A3"/><rect x="18" y="6" width="12" height="10" fill="#E8D5A3"/>
+            <rect x="2" y="18" width="12" height="10" fill="#D4BC88"/><rect x="18" y="18" width="12" height="10" fill="#D4BC88"/>
+            <rect x="2" y="6" width="12" height="2" fill="#D4BC88"/><rect x="18" y="6" width="12" height="2" fill="#D4BC88"/>
+            <line x1="8" y1="6" x2="8" y2="16" stroke="#B8A078" stroke-width="1" stroke-dasharray="2,2"/>
+            <line x1="24" y1="6" x2="24" y2="16" stroke="#B8A078" stroke-width="1" stroke-dasharray="2,2"/>
+          </svg>
+        </div>
+        <div class="proc-lbl">
+          <h4>3. Preparación</h4>
+          <p>Marcas de doblez, pestañas y estructura lista para armar.</p>
+        </div>
+      </div>
+
+      <div class="proc-card reveal">
+        <div class="proc-img">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+            <rect x="10" y="10" width="12" height="12" fill="#E8D5A3"/><rect x="8" y="12" width="16" height="10" fill="#E8D5A3"/>
+            <rect x="6" y="8" width="6" height="6" fill="#E8D5A3"/><rect x="20" y="8" width="6" height="6" fill="#E8D5A3"/>
+            <rect x="4" y="18" width="6" height="6" fill="#E8D5A3"/><rect x="22" y="18" width="6" height="6" fill="#E8D5A3"/>
+            <line x1="10" y1="10" x2="10" y2="22" stroke="#C4A878" stroke-width="1"/>
+            <line x1="22" y1="10" x2="22" y2="22" stroke="#C4A878" stroke-width="1"/>
+          </svg>
+        </div>
+        <div class="proc-lbl">
+          <h4>4. Armado</h4>
+          <p>Las piezas encajan. La figura cobra volumen y forma.</p>
+        </div>
+      </div>
+
+      <div class="proc-card reveal">
+        <div class="proc-img">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+            <rect x="8" y="8" width="16" height="14" fill="#44A537"/>
+            <rect x="6" y="10" width="20" height="12" fill="#44A537"/>
+            <rect x="12" y="16" width="8" height="4" fill="#7BC241"/>
+            <rect x="10" y="6" width="4" height="4" fill="#44A537"/><rect x="18" y="6" width="4" height="4" fill="#44A537"/>
+            <rect x="22" y="2" width="3" height="12" fill="#8B5523"/>
+            <rect x="22" y="14" width="3" height="4" fill="#E74C3C"/>
+            <rect x="24" y="12" width="2" height="4" fill="#E74C3C"/>
+          </svg>
+        </div>
+        <div class="proc-lbl">
+          <h4>5. Pintura</h4>
+          <p>El momento más creativo. Vos elegís los colores y el estilo.</p>
+        </div>
+      </div>
+
+      <div class="proc-card reveal">
+        <div class="proc-img">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+            <rect x="8" y="8" width="16" height="14" fill="#44A537"/>
+            <rect x="6" y="10" width="20" height="12" fill="#44A537"/>
+            <rect x="12" y="16" width="8" height="6" fill="#7BC241"/>
+            <rect x="10" y="6" width="4" height="4" fill="#44A537"/><rect x="18" y="6" width="4" height="4" fill="#44A537"/>
+            <rect x="11" y="7" width="2" height="2" fill="#111"/><rect x="19" y="7" width="2" height="2" fill="#111"/>
+            <rect x="14" y="20" width="4" height="2" fill="#2D6A1F"/>
+            <rect x="22" y="2" width="2" height="2" fill="#F59E0B"/><rect x="20" y="4" width="6" height="2" fill="#F59E0B"/>
+            <rect x="18" y="4" width="10" height="4" fill="#FBBF24"/><rect x="20" y="8" width="6" height="2" fill="#F59E0B"/>
+            <rect x="19" y="6" width="2" height="4" fill="#F59E0B"/><rect x="25" y="6" width="2" height="4" fill="#F59E0B"/>
+          </svg>
+        </div>
+        <div class="proc-lbl">
+          <h4>6. Resultado final</h4>
+          <p>Una pieza única, hecha por vos, lista para coleccionar.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="grass-sep" aria-hidden="true"></div>
+
+<!-- ══ VALORES ════════════════════════════════ -->
+<section id="valores">
+  <div class="sec">
+    <div class="sec-head">
+      <h2 class="sec-title sec-title-light">Lo que nos mueve</h2>
+      <p class="sec-sub sec-sub-light">Los valores detrás de cada figura FROGUI.</p>
+    </div>
+    <div class="valores-grid">
+
+      <div class="val-card reveal">
+        <div class="val-icon">
+          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;width:100%;height:100%">
+            <rect x="6" y="0" width="4" height="3" fill="#FBBF24"/><rect x="3" y="3" width="10" height="6" fill="#FBBF24"/>
+            <rect x="4" y="2" width="8" height="7" fill="#FDE68A"/><rect x="5" y="9" width="6" height="2" fill="#F59E0B"/>
+            <rect x="6" y="11" width="4" height="2" fill="#D97706"/><rect x="6" y="13" width="4" height="2" fill="#92400E"/>
+            <rect x="7" y="6" width="2" height="4" fill="#F59E0B"/><rect x="5" y="8" width="6" height="2" fill="#F59E0B"/>
+          </svg>
+        </div>
+        <h3>Creatividad</h3>
+        <p>Cada producto se convierte en una creación única.</p>
+      </div>
+
+      <div class="val-card reveal">
+        <div class="val-icon">
+          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;width:100%;height:100%">
+            <rect x="9" y="0" width="6" height="5" fill="#9B9B9B"/><rect x="8" y="1" width="8" height="4" fill="#B0B0B0"/>
+            <rect x="10" y="5" width="2" height="10" fill="#8B5523"/><rect x="9" y="4" width="4" height="3" fill="#C0C0C0"/>
+            <rect x="1" y="2" width="2" height="2" fill="#FBBF24"/><rect x="0" y="3" width="4" height="1" fill="#FBBF24"/>
+            <rect x="2" y="8" width="2" height="2" fill="#FBBF24"/><rect x="1" y="9" width="4" height="1" fill="#FBBF24"/>
+          </svg>
+        </div>
+        <h3>Hecho con dedicación</h3>
+        <p>El proceso es tan valioso como el resultado.</p>
+      </div>
+
+      <div class="val-card reveal">
+        <div class="val-icon">
+          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;width:100%;height:100%">
+            <rect x="3" y="6" width="4" height="6" fill="#2E7D32"/><rect x="2" y="8" width="6" height="5" fill="#388E3C"/>
+            <rect x="4" y="4" width="2" height="4" fill="#2E7D32"/><rect x="4" y="12" width="2" height="4" fill="#5D4037"/>
+            <rect x="10" y="4" width="4" height="6" fill="#2E7D32"/><rect x="9" y="6" width="6" height="5" fill="#388E3C"/>
+            <rect x="11" y="2" width="2" height="4" fill="#2E7D32"/><rect x="11" y="11" width="2" height="5" fill="#5D4037"/>
+            <rect x="0" y="14" width="16" height="2" fill="#5D9C24"/>
+          </svg>
+        </div>
+        <h3>Menos pantallas</h3>
+        <p>Actividades creativas reales y conexiones humanas.</p>
+      </div>
+
+      <div class="val-card reveal">
+        <div class="val-icon">
+          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated;width:100%;height:100%">
+            <rect x="2" y="2" width="4" height="4" fill="#F4B8CC"/><rect x="10" y="2" width="4" height="4" fill="#F4D4A0"/>
+            <rect x="6" y="1" width="4" height="3" fill="#E8A87C"/>
+            <rect x="2" y="6" width="4" height="5" fill="#44A537"/><rect x="10" y="6" width="4" height="5" fill="#3498DB"/>
+            <rect x="5" y="4" width="6" height="6" fill="#E8C87A"/>
+            <rect x="2" y="11" width="4" height="5" fill="#2E7D32"/><rect x="10" y="11" width="4" height="5" fill="#2980B9"/>
+            <rect x="5" y="9" width="6" height="7" fill="#D4A853"/>
+          </svg>
+        </div>
+        <h3>Para todas las edades</h3>
+        <p>Experiencias para compartir en familia y con amigos.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ═════════════════════════════════ -->
+<footer id="footer-sec">
+  <div class="footer-inner">
+    <div class="footer-logo-wrap">
+      <img src="frogui.png" alt="FROGUI">
+      <div class="footer-tagline">CREÁ · PINTÁ · DISFRUTÁ</div>
+    </div>
+    <div class="footer-center">
+      <h3>Creá · Pintá · Disfrutá</h3>
+      <p>FROGUI es más que figuras de cartón — es la experiencia de crear, imaginar y disfrutar momentos únicos en familia.</p>
+    </div>
+    <div class="footer-social">
+      <a href="#" class="soc-link" aria-label="Instagram FROGUI">
+        <div class="soc-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+        </div>
+        Instagram
+      </a>
+      <a href="#" class="soc-link" aria-label="TikTok FROGUI">
+        <div class="soc-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.19 8.19 0 004.79 1.53V6.75a4.85 4.85 0 01-1.02-.06z"/></svg>
+        </div>
+        TikTok
+      </a>
+      <a href="https://wa.me/TUTELEFONO" class="soc-link" target="_blank" rel="noopener" aria-label="WhatsApp FROGUI">
+        <div class="soc-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.08L2 22l5.08-1.35A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm5.28 14.33c-.23.64-1.33 1.22-1.83 1.3-.48.08-1.1.11-1.77-.11-.41-.13-.94-.31-1.62-.6-2.84-1.23-4.7-4.08-4.84-4.27-.14-.19-1.2-1.59-1.2-3.03s.76-2.15 1.03-2.45c.27-.3.6-.37.8-.37h.57c.18 0 .43-.07.67.51l.91 2.19c.08.18.04.4-.07.56l-.34.44c-.1.12-.2.25-.09.5.39.82.99 1.62 1.94 2.29.81.56 1.52.74 1.91.82.23.05.5.04.69-.14l.48-.56c.2-.24.41-.17.66-.07l2.19 1.03c.25.12.42.18.48.29.06.1.06.59-.17 1.23z"/></svg>
+        </div>
+        WhatsApp
+      </a>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2024 FROGUI — Talleres Creativos en Cartón. Todos los derechos reservados.</div>
+</footer>
+
+<!-- ══ WHATSAPP FLOAT ══════════════════════════ -->
+<div class="wa-float">
+  <div class="wa-tip">¡Consultanos!</div>
+  <a href="https://wa.me/TUTELEFONO?text=Hola%2C+quiero+consultar+por+los+productos+de+FROGUI." class="wa-btn" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.37 5.08L2 22l5.08-1.35A9.94 9.94 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm5.28 14.33c-.23.64-1.33 1.22-1.83 1.3-.48.08-1.1.11-1.77-.11-.41-.13-.94-.31-1.62-.6-2.84-1.23-4.7-4.08-4.84-4.27-.14-.19-1.2-1.59-1.2-3.03s.76-2.15 1.03-2.45c.27-.3.6-.37.8-.37h.57c.18 0 .43-.07.67.51l.91 2.19c.08.18.04.4-.07.56l-.34.44c-.1.12-.2.25-.09.5.39.82.99 1.62 1.94 2.29.81.56 1.52.74 1.91.82.23.05.5.04.69-.14l.48-.56c.2-.24.41-.17.66-.07l2.19 1.03c.25.12.42.18.48.29.06.1.06.59-.17 1.23z"/></svg>
+  </a>
+</div>
+
+<!-- ══ LIGHTBOX ═══════════════════════════════ -->
+<div id="lb" role="dialog" aria-modal="true" aria-label="Imagen ampliada">
+  <div id="lb-inner">
+    <button id="lb-close" onclick="closeLb()" aria-label="Cerrar">✕ Cerrar</button>
+    <div id="lb-content"></div>
+  </div>
+</div>
+
+<script>
+  // Toggle mobile nav
+  function toggleNav() {
+    document.getElementById('mNav').classList.toggle('open');
+  }
+
+  // Scroll reveal
+  const ro = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+  // Lightbox — opens the product image
+  function openLb(card) {
+    const img = card.querySelector('.prod-img img');
+    if (!img) return;
+    const content = document.getElementById('lb-content');
+    content.innerHTML = `<img src="${img.src}" alt="${img.alt}" style="width:100%;height:auto;display:block;max-height:80vh;object-fit:contain;padding:0">`;
+    document.getElementById('lb').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLb() {
+    document.getElementById('lb').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('lb').addEventListener('click', e => {
+    if (e.target === document.getElementById('lb')) closeLb();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+  // Close mobile nav on outside click
+  document.addEventListener('click', e => {
+    const nav = document.getElementById('mNav');
+    const ham = document.querySelector('.hamburger');
+    if (nav.classList.contains('open') && !nav.contains(e.target) && !ham.contains(e.target)) {
+      nav.classList.remove('open');
+    }
+  });
+</script>
+</body>
+</html>
